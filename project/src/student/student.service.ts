@@ -1,70 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Like } from 'typeorm';
+import { StudentEntity } from './entities/student.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
-import { EnrollCourseDto } from './dto/enroll-course.dto';
 
 @Injectable()
 export class StudentService {
-  private students = [];
-  private enrollments = [];
-  private studentIdCounter = 1;
+  constructor(
+    @InjectRepository(StudentEntity)
+    private studentRepo: Repository<StudentEntity>,
+  ) {}
 
-  create(data: CreateStudentDto) {
-    const newStudent = { id: this.studentIdCounter++, ...data };
-    this.students.push(newStudent);
-    return { message: 'Student registered successfully', student: newStudent };
-  }
-
-  findByFilters(filters: { name?: string; password?: string }) {
-    return this.students.filter(student => {
-      let match = true;
-      if (filters.name)
-        match =
-          match &&
-          student.name.toLowerCase().includes(filters.name.toLowerCase());
-      if (filters.password) match = match && student.password === filters.password;
-      return match;
+  async create(data: CreateStudentDto) {
+    const newStudent = this.studentRepo.create({
+      username: data.username,
+      fullName: data.fullName,
+      isActive: data.isActive ?? false,
     });
+
+    await this.studentRepo.save(newStudent);
+    return { message: 'Student created successfully', student: newStudent };
   }
 
-  findOne(id: number) {
-    return (
-      this.students.find(s => s.id === id) || {
-        message: 'Student not found',
-      }
-    );
+  async findByFullNameSubstring(name: string) {
+    return this.studentRepo.find({ where: { fullName: Like(`%${name}%`) } });
   }
 
-  update(id: number, data: UpdateStudentDto) {
-    const index = this.students.findIndex(s => s.id === id);
-    if (index === -1) return { message: 'Student not found' };
-
-    this.students[index] = { ...this.students[index], ...data };
-    return { message: 'Student updated', student: this.students[index] };
+  async findByUsername(username: string) {
+    const student = await this.studentRepo.findOne({ where: { username } });
+    if (!student) throw new NotFoundException('User not found');
+    return student;
   }
 
-  delete(id: number) {
-    const exists = this.students.some(s => s.id === id);
-    if (!exists) return { message: 'Student not found' };
-
-    this.students = this.students.filter(s => s.id !== id);
-    return { message: 'Student deleted successfully' };
-  }
-
-  enroll(id: number, dto: EnrollCourseDto) {
-    const student = this.students.find(s => s.id === id);
-    if (!student) return { message: 'Student not found' };
-
-    const enrollment = { studentId: id, ...dto };
-    this.enrollments.push(enrollment);
-
-    return { message: 'Enrollment successful', enrollment };
-  }
-
-  getCourses(id: number) {
-    const student = this.students.find(s => s.id === id);
-    if (!student) return { message: 'Student not found' };
-
-    return this.enrollments.filter(e => e.studentId === id);
+  async removeByGenarateid(id: string) {
+    const result = await this.studentRepo.delete(id);
+    if (result.affected === 0) throw new NotFoundException('User not found');
+    return { message: 'User deleted successfully' };
+    
   }
 }

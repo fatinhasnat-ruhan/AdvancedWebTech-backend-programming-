@@ -5,5 +5,5 @@ export class EnrollCourseDto {
   courseName: string;
 
   @IsNotEmpty()
-  duration: string;
+  courseCode: string;
 }
