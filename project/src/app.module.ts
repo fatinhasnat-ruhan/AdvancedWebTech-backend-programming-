@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { StudentModule } from './student/student.module';
 import { StudentEntity } from './student/entities/student.entity';
+import { AuthModule } from 'src/student/auth/auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { StudentEntity } from './student/entities/student.entity';
       synchronize: true,
       autoLoadEntities: true,
     }),
-    StudentModule,
+    StudentModule,AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
