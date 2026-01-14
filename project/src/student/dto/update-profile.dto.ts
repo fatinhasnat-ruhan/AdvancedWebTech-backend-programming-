@@ -1,11 +1,10 @@
+
 import { IsString, IsNotEmpty } from 'class-validator';
 
 export class UpdateProfileDto {
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty() @IsString()
   address: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty() @IsString()
   phoneNumber: string;
 }
