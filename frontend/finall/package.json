@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "next": "16.1.1",
+    "axios": "^1.13.2",
+    "next": "^15.2.4",
+    "pusher-js": "^8.4.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.69.0",
@@ -24,5 +26,4 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   }
-  
 }

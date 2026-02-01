@@ -62,14 +62,15 @@ create(@Body() body: CreateStudentDto) {
     return this.studentService.getProfileByStudentId(studentId);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Put('profile/update/:id')
-  updateProfile(
-    @Param('id') id: number,
-    @Body() body: UpdateProfileDto,
-  ) {
-    return this.studentService.updateProfile(id, body);
-  }
+@Put('profile/update/:studentId')
+updateProfile(
+  @Param('studentId') studentId: string,
+  @Body() body: UpdateProfileDto,
+) {
+  return this.studentService.updateProfileByStudent(studentId, body);
+}
+
+
 
   // COURSE ROUTES 
   @UseGuards(JwtAuthGuard)
@@ -85,4 +86,14 @@ create(@Body() body: CreateStudentDto) {
   getCourses(@Param('studentId') studentId: string) {
     return this.studentService.getCoursesByStudentId(studentId);
   }
+@Get()
+getAllStudents() {
+  return this.studentService.getAllStudents();
+}
+@Delete('course/:id')
+removeCourse(@Param('id') id: string) {
+  return this.studentService.removeCourse(id);
+}
+
+
 }

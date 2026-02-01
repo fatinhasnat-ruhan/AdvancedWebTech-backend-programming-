@@ -1,6 +1,6 @@
 import './globals.css';
-import type { ReactNode } from 'react';
 import ClientNavbar from '../components/ClientNavber';
+import { ReactNode } from 'react';
 
 export default function RootLayout({
   children,
@@ -11,9 +11,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ClientNavbar />
-        <main className="container">
-          {children}
-        </main>
+
+      
+        <main className="container">{children}</main>
       </body>
     </html>
   );

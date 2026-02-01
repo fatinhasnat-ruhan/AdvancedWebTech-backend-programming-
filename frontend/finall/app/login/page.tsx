@@ -1,36 +1,46 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema } from '../validators/auth.schema';
-import { api } from '../lib/axios';
+import { useState } from 'react';
+import axios from 'axios';
 
-export default function Login() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(loginSchema),
-  });
+export default function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const onSubmit = async (data: any) => {
-    const res = await api.post('/auth/login', data);
-    localStorage.setItem('token', res.data.accessToken);
-    alert('Login successful');
+  const handleLogin = async () => {
+    try {
+      await axios.post(
+        'http://localhost:3000/auth/login',
+        { username, password },
+        { withCredentials: true } 
+      );
+
+      window.location.href = '/dashboard'; 
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Login failed');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <h2>Login</h2>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <h2>Login</h2>
 
-      <input {...register('username')} placeholder="Username" />
-      {errors.username && <p>{errors.username.message as string}</p>}
+        <input
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
 
-      <input type="password" {...register('password')} placeholder="Password" />
-      {errors.password && <p>{errors.password.message as string}</p>}
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      <button type="submit">Login</button>
-    </form>
+        <button onClick={handleLogin}>Login</button>
+      </div>
+    </div>
   );
 }
